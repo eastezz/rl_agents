@@ -48,7 +48,7 @@ def print_policy(q_table, env_id):
     env = gym.make(env_id)
     desc = getattr(env.unwrapped, "desc", None)
     env.close()
-    if desc is None:
+    if desc is None or desc.size != len(q_table):
         print("(policy map only available for grid environments like FrozenLake)")
         return
 
