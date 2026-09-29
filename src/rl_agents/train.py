@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import gymnasium as gym
 import numpy as np
@@ -11,6 +12,7 @@ def parse_args():
     parser.add_argument("--env", default="FrozenLake-v1", help="gymnasium environment id")
     parser.add_argument("--episodes", type=int, default=20000, help="number of training episodes")
     parser.add_argument("--seed", type=int, default=42, help="random seed")
+    parser.add_argument("--out", default="results", help="folder to save the Q-table and learning curve data")
     return parser.parse_args()
 
 
@@ -55,7 +57,7 @@ def train(env_id, episodes, seed, log_every=1000):
             )
 
     env.close()
-    return agent, episode_rewards
+    return agent, episode_rewards, successes
 
 
 def evaluate(agent, env_id, episodes, seed):
@@ -74,9 +76,21 @@ def evaluate(agent, env_id, episodes, seed):
 
 def main():
     args = parse_args()
-    agent, episode_rewards = train(args.env, args.episodes, args.seed)
+    agent, episode_rewards, successes = train(args.env, args.episodes, args.seed)
     eval_rate = evaluate(agent, args.env, episodes=1000, seed=args.seed + 10**6)
     print(f"\ngreedy policy success rate over 1000 test episodes: {eval_rate:.1%}")
+
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_file = out_dir / f"{args.env}_seed{args.seed}.npz"
+    np.savez(
+        out_file,
+        q_table=agent.q_table,
+        rewards=np.array(episode_rewards),
+        successes=np.array(successes),
+        eval_rate=eval_rate,
+    )
+    print(f"saved results to {out_file}")
 
 
 if __name__ == "__main__":
