@@ -35,12 +35,12 @@ def train(env_id, episodes, seed, log_every=1000):
     successes = []
     for episode in range(episodes):
         agent.epsilon = epsilon_schedule(episode, decay_episodes)
-        state, info = env.reset(seed=seed + episode)
+        state, _info = env.reset(seed=seed + episode)
         total_reward = 0.0
         terminated = truncated = False
         while not (terminated or truncated):
             action = agent.act(state)
-            next_state, reward, terminated, truncated, info = env.step(action)
+            next_state, reward, terminated, truncated, _info = env.step(action)
             agent.update(state, action, reward, next_state, terminated)
             state = next_state
             total_reward += reward
@@ -65,10 +65,10 @@ def evaluate(agent, env_id, episodes, seed):
     env = gym.make(env_id)
     wins = 0
     for episode in range(episodes):
-        state, info = env.reset(seed=seed + episode)
+        state, _info = env.reset(seed=seed + episode)
         terminated = truncated = False
         while not (terminated or truncated):
-            state, reward, terminated, truncated, info = env.step(agent.greedy_action(state))
+            state, reward, terminated, truncated, _info = env.step(agent.greedy_action(state))
         wins += terminated and reward > 0
     env.close()
     return wins / episodes

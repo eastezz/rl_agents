@@ -1,5 +1,7 @@
 # rl_agents
 
+[![CI](https://github.com/eastezz/rl_agents/actions/workflows/ci.yml/badge.svg)](https://github.com/eastezz/rl_agents/actions/workflows/ci.yml)
+
 Reinforcement learning agents written from scratch in Python with NumPy and Gymnasium. The first one is tabular Q-learning.
 
 ## Result: FrozenLake
@@ -64,9 +66,19 @@ python -m rl_agents.train --env Taxi-v4 --episodes 5000 --seed 1
 
 Both with seed 42 and default settings.
 
+## Tests
+
+```powershell
+pip install -e ".[dev]"
+pytest
+ruff check .
+```
+
+The 19 tests check the Q-learning update (with and without a terminal state), the tie-breaking, the epsilon schedule, that training with the same seed gives the same Q-table, that a trained agent clearly beats random play, and the plotting helpers. GitHub Actions runs ruff and the tests on every push to `main` and on every pull request.
+
 ## Roadmap
 
-- [ ] Unit tests with pytest and a GitHub Actions workflow that runs them
-- [ ] Save and load a trained agent, then serve it with FastAPI (separate repo: rl-agent-api)
+- [x] Unit tests with pytest and a GitHub Actions workflow that runs them
+- [x] Serve the saved Q-tables with FastAPI, Docker and CI in a separate repo: [rl_agents_api](https://github.com/eastezz/rl_agents_api)
 - [ ] DQN and PPO with stable-baselines3 on CartPole and LunarLander
 - [ ] A custom Gymnasium environment based on one of my own games
